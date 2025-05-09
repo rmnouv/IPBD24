@@ -1,0 +1,95 @@
+{
+  "index_patterns": ["dvf-f"],
+  "settings": {
+    "index.number_of_shards": 1,
+    "index.number_of_replicas": 0,
+    "index.analysis": {
+      "analyzer": {
+        "dvf_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "asciifolding"]
+        },
+        "dvf_street_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "asciifolding", "dvf_synonym"]
+        }
+      },
+      "filter": {
+        "dvf_synonym": {
+          "type": "synonym",
+          "synonyms": [
+            "bd => boulevard",
+            "av => avenue",
+            "r => rue",
+            "rte => route"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "_source": {
+      "enabled": true
+    },
+    "properties": {
+      "id_mutation": {
+        "type": "keyword"
+      },
+      "date_mutation": {
+        "type": "date",
+        "format": "yyyy-MM-dd"
+      },
+      "valeur_fonciere": {
+        "type": "float"
+      },
+      "surface_reelle_bati": {
+        "type": "float"
+      },
+      "surface_terrain": {
+        "type": "float"
+      },
+      "location": {
+        "type": "geo_point"
+      },
+      "address": {
+        "properties": {
+          "number": {
+            "type": "keyword"
+          },
+          "street_name": {
+            "type": "text",
+            "analyzer": "dvf_street_analyzer"
+          },
+          "zipcode": {
+            "type": "keyword"
+          },
+          "city": {
+            "type": "text",
+            "analyzer": "dvf_analyzer",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "code_postal": { "type": "keyword" },
+      "code_commune": { "type": "keyword" },
+      "nom_commune": {
+        "type": "text",
+        "analyzer": "dvf_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "code_type_local": { "type": "keyword" },
+      "type_local": { "type": "keyword" },
+      "nombre_pieces_principales": { "type": "integer" }
+    }
+  }
+}
